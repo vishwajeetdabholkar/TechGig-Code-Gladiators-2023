@@ -1,0 +1,102 @@
+The Magic Wand (100 Marks)
+You are a wizard who possesses a magical wand that can be used to change the values of an array. Your wand has two powers: Increase and Decrease. With each use of the wand, you can either increase or decrease any element of the array by 1.
+
+
+One day, a group of villagers came to you with a problem. They had an array of positive integers of size N and a set of queries of size M. For each query, queries[i], they wanted to make all the elements of the array equal to queries[i] using your magic wand.
+
+
+To help the villagers, you decided to use your magic wand to perform the operations. However, each time you perform an operation, the cost of using your wand increases. The cost of using your wand for an operation on an element is equal to the absolute difference between the value of the element and the desired value after the operation.
+
+
+Example:
+
+If you want to change an element from 5 to 3, it will cost you 2. If you want to change an element from 7 to 8, it will cost you 1.
+
+
+You can perform any number of operations on any element of the array for a given query. However, the cost of using the wand for each operation accumulates, and you want to minimize the total cost of all operations for each query.
+
+
+Input Format
+The first line of the input consists of two space-separated integers N (length of array) and M (length of queries).
+
+The second line of input consists of N space-separated integers arr[i].
+
+The third line of input consists of M space-separated integers queries[i].
+
+
+Constraints
+1 <= N <= 10^5
+
+1 <= M <= 10^5
+
+1 <= arr[i] <= 10^9
+
+1 <= queries[i] <= 10^9
+
+
+Output Format
+Print a list of integers of cost of length m, where cost[i] is the minimum cost to make all elements of nums equal to queries[i].
+
+Sample TestCase 1
+Input
+5 3
+1 2 3 4 5
+5 2 1
+Output
+10 7 10
+Explanation
+
+Number of array elements, N = 5
+
+Number of Queries,M = 3
+
+
+For the first query, queries[0] = 5, you can increase the elements at indices 0, 1, 2, and 3 by 4, 3, 2 and 1 respectively. Total cost of operations = 10.
+
+For the second query, queries[1] = 2, you can decrease the elements at indices 2, 3, and 4 by 1, 2, and 3, and increase the element at index 0 by 1. Total cost of operations = 7.
+
+For the third query, queries[2] = 1, you can decrease the elements at indices 4, 3, 2, and 1, by 4, 3, 2 and 1. Total cost of operations = 10
+
+######################################################################################################################
+SOLUTION:
+
+The villagers present an array of integers and a set of queries. Each query represents a desired value for all elements in the array.
+
+The magic wand can be used to change the value of any element in the array by 1, either increasing or decreasing it. The cost of each operation is equal to the absolute difference between the original value and the desired value.
+
+The aim is to fulfill each query by making all elements of the array equal to the query value with the least possible total operation cost.
+
+The solution begins by reading the array and the queries, and then sorting the array in ascending order.
+
+The solution then creates a prefix sum array. Each element at index i in this array is the sum of all elements in the sorted array up to index i. This array allows efficient calculation of the total cost later.
+
+For each query, the solution performs a binary search to find the index idx where the query value can be placed in the sorted array to maintain the sorted order. All elements up to index idx-1 in the sorted array are less than or equal to the query value, and all elements from index idx onward are greater than the query value.
+
+The total cost to make all elements equal to the query value is the cost of increasing all elements less than the query value to the query value and the cost of decreasing all elements greater than the query value to the query value.
+
+The cost of increasing all elements less than the query value is the product of the query value and the number of these elements minus the sum of these elements, which is obtained from the prefix sum array.
+
+The cost of decreasing all elements greater than the query value is the sum of these elements minus the product of the query value and the number of these elements, which is also obtained from the prefix sum array.
+
+The solution then prints the total cost for each query. The time complexity of the solution is O(n log n) due to the sorting operation and binary search, and the space complexity is O(n) due to the storage of the array and the prefix sum array. This makes the solution efficient for large inputs.
+
+######################################################################################################################
+
+Code:
+from bisect import bisect_left
+
+# reading inputs
+N, M = map(int, input().split())
+arr = sorted(list(map(int, input().split())))
+queries = list(map(int, input().split()))
+
+# creating prefix sum array
+prefix_sum = [0]*(N+1)
+for i in range(1, N+1):
+    prefix_sum[i] = prefix_sum[i-1] + arr[i-1]
+
+# calculating total operation cost for each query
+for q in queries:
+    idx = bisect_left(arr, q)
+    total_cost = (q*idx - prefix_sum[idx]) + (prefix_sum[N] - prefix_sum[idx] - q*(N-idx))
+    print(total_cost, end=" ")
